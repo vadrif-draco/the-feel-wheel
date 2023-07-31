@@ -39,7 +39,7 @@ function generateWheelRegionsCSS() {
                 L3PrevArcStart = L3NextArcStart;
             });
             L2NextArcStart = L2PrevArcStart + L2ArcIncrement;
-            css += `[id="${L1i}-${L2i}"] { clip-path: polygon(${generatePartialSectorArea(L2PrevArcStart, L2NextArcStart, 0.14, 0.283, 3, 4)}); }`;
+            css += `[id="${L1i}-${L2i}"] { clip-path: polygon(${generatePartialSectorArea(L2PrevArcStart, L2NextArcStart, 0.14, 0.282, 3, 4)}); }`;
             L2PrevArcStart = L2NextArcStart;
         });
         L1NextArcStart = L1PrevArcStart + L1.length / 41 * 2 * Math.PI;
@@ -56,6 +56,8 @@ function generateWheelRegionsCSS() {
 // The values assume a circle of unit diameter (i.e., all values are percentages)
 function generatePartialSectorArea(arcStart, arcEnd, radiusStart, radiusEnd, numOfInnerArcPoints, numOfOuterArcPoints) {
     res = '';
+    arcStart -= 0.001;
+    arcEnd += 0.001;
     numOfInnerArcPoints = Math.max(numOfInnerArcPoints, 1);
     numOfOuterArcPoints = Math.max(numOfOuterArcPoints, 1);
 
@@ -99,29 +101,51 @@ function generateWheelRegionsHTML() {
 function toggleL3(L1i, L2i, L3i, refreshL2 = true, refreshL1 = true) {
     feels[L1i][L2i][L3i] = !feels[L1i][L2i][L3i];
     localStorage.setItem("feels", JSON.stringify(feels));
-    refreshStyle(getElementById(`${L1i}-${L2i}-${L3i}`));
-    if (refreshL2) refreshStyle(getElementById(`${L1i}-${L2i}`));
-    if (refreshL1) refreshStyle(getElementById(`${L1i}`));
+    refreshStyle(document.getElementById(`${L1i}-${L2i}-${L3i}`));
+    if (refreshL2) refreshStyle(document.getElementById(`${L1i}-${L2i}`));
+    if (refreshL1) refreshStyle(document.getElementById(`${L1i}`));
 }
 
 // Toggles L2 element (via toggling its children), then refreshes its and their styles, and optionally its L1 parent's
 function toggleL2(L1i, L2i, refreshL1 = true) {
     feels[L1i][L2i].forEach((_, L3i) => toggleL3(L1i, L2i, L3i, false, false));
     localStorage.setItem("feels", JSON.stringify(feels));
-    refreshStyle(getElementById(`${L1i}-${L2i}`));
-    if (refreshL1) refreshStyle(getElementById(`${L1i}`));
+    refreshStyle(document.getElementById(`${L1i}-${L2i}`));
+    if (refreshL1) refreshStyle(document.getElementById(`${L1i}`));
 }
 
 // Toggles L3 element (via toggling its children and grandchildren), then refreshes its style
 function toggleL1(L1i) {
     feels[L1i].forEach((_, L2i) => toggleL2(L1i, L2i, false));
     localStorage.setItem("feels", JSON.stringify(feels));
-    refreshStyle(getElementById(`${L1i}`));
+    refreshStyle(document.getElementById(`${L1i}`));
 }
 
 // Refreshes the style of the element to be consistent with its corresponding state in the feels array
 function refreshStyle(element) {
-    // TODO:
-    // opacity: 0.6 to 1.0;
-    // filter: saturate(0.2 to 1.0);
+    levels = element.id.split('-')
+    ratio = 0;
+    switch (levels.length) {
+        case 3:
+            ratio = feels[levels[0]][levels[1]][levels[2]] ? 1 : 0;
+            break;
+        case 2:
+            ratio = feels[levels[0]][levels[1]].filter(Boolean).length / feels[levels[0]][levels[1]].length;
+            break;
+        case 1:
+            ratio = feels[levels[0]].flat().filter(Boolean).length / feels[levels[0]].flat().length;
+            break;
+        default:
+            break;
+    }
+    element.style.opacity = 1.0 * ratio + 0.5 * (1 - ratio);
+    element.style.filter = `saturate(${1.0 * ratio + 0.25 * (1 - ratio)})`;
+    element.style.zIndex = (ratio > 0.5) ? "2" : "1";
+    if (element.parentNode.querySelector(":hover") == element) {
+        element.classList.add("nohover");
+        element.addEventListener("mouseleave", function handler() {
+            element.classList.remove("nohover");
+            element.removeEventListener("mouseleave", handler);
+        });
+    }
 }
