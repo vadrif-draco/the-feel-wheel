@@ -35,15 +35,15 @@ function generateWheelRegionsCSS() {
         L1.forEach((L2, L2i) => {
             L2.forEach((_, L3i) => {
                 L3NextArcStart = L3PrevArcStart + L3ArcIncrement;
-                css += `[id="${L1i}-${L2i}-${L3i}"] { clip-path: polygon(${generateSector(L3PrevArcStart, L3NextArcStart, 0.285, 0.442)}); }`;
+                css += `[id="${L1i}-${L2i}-${L3i}"] { clip-path: polygon(${generatePartialSectorArea(L3PrevArcStart, L3NextArcStart, 0.285, 0.442, 2, 3)}); }`;
                 L3PrevArcStart = L3NextArcStart;
             });
             L2NextArcStart = L2PrevArcStart + L2ArcIncrement;
-            css += `[id="${L1i}-${L2i}"] { clip-path: polygon(${generateSector(L2PrevArcStart, L2NextArcStart, 0.14, 0.283)}); }`;
+            css += `[id="${L1i}-${L2i}"] { clip-path: polygon(${generatePartialSectorArea(L2PrevArcStart, L2NextArcStart, 0.14, 0.283, 3, 4)}); }`;
             L2PrevArcStart = L2NextArcStart;
         });
         L1NextArcStart = L1PrevArcStart + L1.length / 41 * 2 * Math.PI;
-        css += `[id="${L1i}"] { clip-path: polygon(${generateSector(L1PrevArcStart, L1NextArcStart, 0, 0.136)}); }`;
+        css += `[id="${L1i}"] { clip-path: polygon(${generatePartialSectorArea(L1PrevArcStart, L1NextArcStart, 0, 0.1375, 1, 10)}); }`;
         L1PrevArcStart = L1NextArcStart;
     });
     style = document.createElement('style');
@@ -51,15 +51,31 @@ function generateWheelRegionsCSS() {
     document.head.appendChild(style);
 }
 
-// Used for generating the wheel regions clip paths; given the arc and radius information of the sector
+// Used for generating the wheel regions clip paths which are approximations of partial sectors;
+// Given the arc and radius start and end information of the sector as well as number of points for the inner and outer arcs
 // The values assume a circle of unit diameter (i.e., all values are percentages)
-function generateSector(arcStart, arcEnd, radiusStart, radiusEnd) {
-    res = `${(0.5 + radiusStart * Math.cos(arcStart)) * 100}% ${(0.5 + radiusStart * Math.sin(arcStart)) * 100}%`
-        + `, ${(0.5 + radiusStart * Math.cos(arcEnd)) * 100}% ${(0.5 + radiusStart * Math.sin(arcEnd)) * 100}%`
-        + `, ${(0.5 + radiusEnd * Math.cos(arcEnd)) * 100}% ${(0.5 + radiusEnd * Math.sin(arcEnd)) * 100}%`
-        + `, ${(0.5 + radiusEnd * Math.cos(arcStart)) * 100}% ${(0.5 + radiusEnd * Math.sin(arcStart)) * 100}%`
-    return res;
-    // example output for L1: 50% 36.3%, 52.5% 36.5%, 54.5% 37.3%, 56.3% 38%, 57.5% 38.8%, 59% 40%, 61% 41.5%, 50% 50%
+function generatePartialSectorArea(arcStart, arcEnd, radiusStart, radiusEnd, numOfInnerArcPoints, numOfOuterArcPoints) {
+    res = '';
+    numOfInnerArcPoints = Math.max(numOfInnerArcPoints, 1);
+    numOfOuterArcPoints = Math.max(numOfOuterArcPoints, 1);
+
+    // Equidistant points in inner arc from inner arc start to end
+    for (let i = 0; i < numOfInnerArcPoints; i++) {
+        arcStartWeight = numOfInnerArcPoints - i - 1;
+        arcEndWeight = i;
+        arcIntermediate = (arcStart * arcStartWeight + arcEnd * arcEndWeight) / Math.max(numOfInnerArcPoints - 1, 1);
+        res += `${(0.5 + radiusStart * Math.cos(arcIntermediate)) * 100}% ${(0.5 + radiusStart * Math.sin(arcIntermediate)) * 100}%, `;
+    }
+
+    // Equidistant points in outer arc from outer arc end to start (needs to be reversed for polygon continuity)
+    for (let i = 0; i < numOfOuterArcPoints; i++) {
+        arcStartWeight = i;
+        arcEndWeight = numOfOuterArcPoints - i - 1;
+        arcIntermediate = (arcStart * arcStartWeight + arcEnd * arcEndWeight) / Math.max(numOfOuterArcPoints - 1, 1);
+        res += `${(0.5 + radiusEnd * Math.cos(arcIntermediate)) * 100}% ${(0.5 + radiusEnd * Math.sin(arcIntermediate)) * 100}%, `;
+    }
+
+    return res.slice(0, -2);
 }
 
 // This is a DFS traversal of L1, L2, and L3 to stack HTML elements of the wheel image (clipped by the previous CSS function) atop each other
