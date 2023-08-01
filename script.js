@@ -86,13 +86,13 @@ function generateWheelRegionsHTML() {
     feels.forEach((L1, L1i) => {
         L1.forEach((L2, L2i) => {
             L2.forEach((_, L3i) => {
-                stack.insertAdjacentHTML("beforeend", `<img src="wheel.png" id="${L1i}-${L2i}-${L3i}" class="clip" onclick="toggleL3(${L1i},${L2i},${L3i})">`);
+                stack.insertAdjacentHTML("beforeend", `<img src="wheel.webp" id="${L1i}-${L2i}-${L3i}" class="clip" onclick="toggleL3(${L1i},${L2i},${L3i})">`);
                 refreshStyle(stack.lastChild);
             })
-            stack.insertAdjacentHTML("beforeend", `<img src="wheel.png" id="${L1i}-${L2i}" class="clip" onclick="toggleL2(${L1i},${L2i})">`);
+            stack.insertAdjacentHTML("beforeend", `<img src="wheel.webp" id="${L1i}-${L2i}" class="clip" onclick="toggleL2(${L1i},${L2i})">`);
             refreshStyle(stack.lastChild);
         })
-        stack.insertAdjacentHTML("beforeend", `<img src="wheel.png" id="${L1i}" class="clip" onclick="toggleL1(${L1i})">`);
+        stack.insertAdjacentHTML("beforeend", `<img src="wheel.webp" id="${L1i}" class="clip" onclick="toggleL1(${L1i})">`);
         refreshStyle(stack.lastChild);
     });
 }

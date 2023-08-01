@@ -1,18 +1,21 @@
 * {
     margin: 0;
     padding: 0;
-    transition-property: all;
-    transition-duration: 200ms;
 }
 
 img {
     position: fixed;
 }
 
+.clip {
+    transition-property: all;
+    transition-duration: 200ms;
+}
+
 .clip:hover {
     cursor: pointer;
     scale: 1.05;
-    z-index: 3;
+    z-index: 3 !important;
 }
 
 .clip:hover:not(.nohover) {
