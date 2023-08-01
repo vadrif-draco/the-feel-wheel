@@ -7,6 +7,12 @@ img {
     position: fixed;
 }
 
+body {
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+}
+
 .clip {
     transition-property: all;
     transition-duration: 200ms;
@@ -24,8 +30,8 @@ img {
 }
 
 #img-stack {
-    display: flex;
-    justify-content: center;
+    width: min(100vh, 100vw);
+    height: min(100vh, 100vw);
 }
 
 #img-stack > * {
