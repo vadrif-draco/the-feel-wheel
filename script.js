@@ -11,19 +11,19 @@ function loadFeelsArray() {
     feels = JSON.parse(localStorage.getItem("feels")); // Returns null if JSON string to parse is itself null
     if (feels == null) {
         feels = Array(7);
-        feels[0] = Array.from(Array(6), () => Array.from(Array(2), _ => false));
-        feels[1] = Array.from(Array(8), () => Array.from(Array(2), _ => false));
-        feels[2] = Array.from(Array(4), () => Array.from(Array(2), _ => false));
-        feels[3] = Array.from(Array(6), () => Array.from(Array(2), _ => false));
-        feels[4] = Array.from(Array(9), () => Array.from(Array(2), _ => false));
-        feels[5] = Array.from(Array(4), () => Array.from(Array(2), _ => false));
-        feels[6] = Array.from(Array(4), () => Array.from(Array(2), _ => false));
+        feels[0] = Array.from(Array(6), () => Array.from(Array(2), _ => false)); // Fearful
+        feels[1] = Array.from(Array(8), () => Array.from(Array(2), _ => false)); // Angry
+        feels[2] = Array.from(Array(4), () => Array.from(Array(2), _ => false)); // Disgusted
+        feels[3] = Array.from(Array(6), () => Array.from(Array(2), _ => false)); // Sad
+        feels[4] = Array.from(Array(9), () => Array.from(Array(2), _ => false)); // Happy
+        feels[5] = Array.from(Array(4), () => Array.from(Array(2), _ => false)); // Surprised
+        feels[6] = Array.from(Array(4), () => Array.from(Array(2), _ => false)); // Bad
         localStorage.setItem("feels", JSON.stringify(feels));
     }
 }
 
 // The wheel has three levels of "feels", L1 being the innermost level, L3 being the outermost, each having interactable regions
-// Generates the "regions" clip paths for each feeling in L2 and L3
+// Generates the "regions" clip paths for each feeling in all levels
 function generateWheelRegionsCSS() {
     const L3ArcIncrement = 1 / 82 * 2 * Math.PI;
     const L2ArcIncrement = 1 / 41 * 2 * Math.PI;
