@@ -114,7 +114,7 @@ function toggleL2(L1i, L2i, refreshL1 = true) {
     if (refreshL1) refreshStyle(document.getElementById(`${L1i}`));
 }
 
-// Toggles L3 element (via toggling its children and grandchildren), then refreshes its style
+// Toggles L1 element (via toggling its children and grandchildren), then refreshes its style
 function toggleL1(L1i) {
     feels[L1i].forEach((_, L2i) => toggleL2(L1i, L2i, false));
     localStorage.setItem("feels", JSON.stringify(feels));

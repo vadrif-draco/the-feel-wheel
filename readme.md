@@ -10,7 +10,7 @@
 - Todo: Improve performance on low-end and mobile devices
 
 
-#### Take a look through the code, it's the most vanilla HTML-CSS-JS static webpage there is... with some ingenuity of course!
+##### Take a look through the code, it's the most vanilla HTML-CSS-JS static webpage there is... with some ingenuity of course!
 
 
 # Resources:
